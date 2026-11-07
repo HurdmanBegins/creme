@@ -1,0 +1,53 @@
+services:
+  backend:
+    # Image construite par la CI GitHub à chaque push sur main ; `build` reste pour le dev local (--build).
+    image: ghcr.io/hurdmanbegins/creme-backend:latest
+    build: ./backend
+    container_name: creme-backend
+    restart: unless-stopped
+    environment:
+      APP_PASSWORD: ${APP_PASSWORD:?Définis APP_PASSWORD dans le fichier .env}
+      # Le back tourne avec votre utilisateur : au démarrage, data/ lui est attribué
+      # puis le serveur bascule dessus. Valeurs lues dans .env (commande « id »).
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      DATA_FILE: /data/counters.json
+      TZ: Europe/Paris
+    volumes:
+      # Les compteurs (un seul fichier JSON)
+      - ./data:/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/api/health"]
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    image: ghcr.io/hurdmanbegins/creme-frontend:latest
+    build: ./frontend
+    container_name: creme-frontend
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Paris
+    depends_on:
+      backend:
+        condition: service_healthy
+    expose:
+      - "80"
+    networks:
+      - web       # réseau du reverse proxy
+      - internal  # pour joindre le back (nginx proxifie /api vers creme-backend:8080)
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  web:
+    external: true
+  internal:
