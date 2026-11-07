@@ -65,11 +65,20 @@ export function hasGain(counter) {
   return Number(counter.gainAmount) > 0
 }
 
-// Valeur accumulée : montant × temps écoulé / période. Figée en pause (via ms), nulle avant le départ.
+// Durée effective des tentatives passées (« j'ai craqué »), en ms.
+export function pastAttemptsMs(counter) {
+  return (counter.attempts || []).reduce((sum, a) => sum + Math.max(0, Number(a.seconds) || 0) * SECOND, 0)
+}
+
+// Valeur accumulée : montant × temps effectif / période. Le temps effectif cumule les
+// tentatives passées et la tentative en cours : craquer ne remet pas le gain à zéro.
+// Figée en pause (via ms), et la part en cours est nulle avant le départ.
 export function gainValue(counter, ms) {
   const amount = Number(counter.gainAmount) || 0
-  if (amount <= 0 || ms <= 0) return 0
-  return (amount * ms) / (PERIOD_MS[counter.gainPeriod] || DAY)
+  if (amount <= 0) return 0
+  const total = pastAttemptsMs(counter) + Math.max(0, ms)
+  if (total <= 0) return 0
+  return (amount * total) / (PERIOD_MS[counter.gainPeriod] || DAY)
 }
 
 export function gainDecimals(counter) {

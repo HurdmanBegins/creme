@@ -83,7 +83,9 @@ Corps d'un compteur : `{ "title", "phrase", "emoji", "color", "startAt",
 `gainAmount` ≥ 0 avec 0 = pas de gain, `gainPeriod` parmi hour/day/week/month,
 `gainUnit` et `gainLabel` libres, ex. `€` et `économisés`).
 
-Gain affiché = `gainAmount × temps écoulé / période` (figé en pause).
+Gain affiché = `gainAmount × temps effectif / période` (figé en pause), où le
+temps effectif cumule les tentatives passées et la tentative en cours : craquer
+ne remet pas le gain à zéro.
 `equivUnit`/`equivValue` : équivalence personnalisée (1 equivUnit = equivValue gainUnit).
 Les réponses contiennent aussi `attempts` (tentatives passées), `archived`, `archivedAt`.
 

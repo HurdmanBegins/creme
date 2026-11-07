@@ -128,6 +128,7 @@ async function share() {
       <span v-if="gainIcon" class="gain-icon" aria-hidden="true">{{ gainIcon }}</span>
       <span class="gain-text"><b>{{ gainText }}</b> {{ counter.gainUnit }} {{ counter.gainLabel }}</span>
       <small class="gain-rate">{{ rateText }}</small>
+      <small v-if="attempts.length" class="gain-note">cumul de {{ attempts.length + 1 }} tentatives, rien n'est perdu 💪</small>
       <Transition name="fade" mode="out-in">
         <span v-if="equivText" :key="equivText" class="equiv">{{ equivText }}</span>
       </Transition>
