@@ -21,7 +21,7 @@ Traefik, Nginx Proxy Manager, Caddy…). Le back reste sur un réseau interne.
 
 ```bash
 docker network create web   # si le réseau n'existe pas déjà
-cp .env.example .env        # puis change APP_PASSWORD, et PUID/PGID (commande « id »)
+cp .env.example .env        # puis mets un VRAI mot de passe dans APP_PASSWORD (8 car. min), et PUID/PGID (commande « id »)
 docker compose pull && docker compose up -d     # images prêtes à l'emploi (GHCR)
 # ou, pour construire soi-même :
 docker compose up -d --build

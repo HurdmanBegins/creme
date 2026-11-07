@@ -20,6 +20,12 @@ func main() {
 	if password == "" {
 		log.Fatal("APP_PASSWORD est vide : définis-le dans le .env")
 	}
+	if password == "change-moi-vraiment" || password == "chantilly" {
+		log.Fatal("APP_PASSWORD a encore la valeur d'exemple : choisis un vrai mot de passe dans le .env")
+	}
+	if len(password) < 8 {
+		log.Fatal("APP_PASSWORD est trop court (8 caractères minimum)")
+	}
 	dataFile := env("DATA_FILE", "/data/counters.json")
 	addr := ":" + env("BACKEND_PORT", "8080")
 
